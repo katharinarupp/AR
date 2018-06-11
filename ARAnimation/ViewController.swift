@@ -15,20 +15,61 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet var sceneView: ARSCNView!
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
+    
         
-        // Set the view's delegate
-        sceneView.delegate = self
+
+        let box = SCNBox(width:0.5, height: 0.1, length: 0.1, chamferRadius:0)
+        let boxNode = SCNNode()
+        boxNode.geometry = box
+        boxNode.scale = SCNVector3(0.2,0.2,0.2)
+        boxNode.position = SCNVector3(0,0,-0.2)
         
-        // Show statistics such as fps and timing information
-        sceneView.showsStatistics = true
         
-        // Create a new scene
-        let scene = SCNScene(named: "art.scnassets/ship.scn")!
+        let human = SCNBox(width:0.02, height: 0.05, length: 0.01, chamferRadius:0)
+        let humanNode = SCNNode()
+        humanNode.geometry = human
+        humanNode.position = SCNVector3(0,0,-0.4)
         
-        // Set the scene to the view
+        
+        let human2 = SCNBox(width:0.02, height: 0.05, length: 0.01, chamferRadius:0)
+        let human2Node = SCNNode()
+        human2Node.geometry = human2
+        human2Node.position = SCNVector3(0,0,-0.5)
+        
+        
+        
+        
+        
+        let scene = SCNScene()
+        scene.rootNode.addChildNode(boxNode)
+        scene.rootNode.addChildNode(humanNode)
+        scene.rootNode.addChildNode(human2Node)
+        
+        
+        
+        
         sceneView.scene = scene
+        // Set the view's delegate
+        //sceneView.delegate = self
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.didTap(withGestureRecognizer:)) )
+        sceneView.addGestureRecognizer(tapGestureRecognizer)
+        
+        sceneView.showsStatistics = true
+    
+    
     }
+    
+    @objc func didTap(withGestureRecognizer recognizer:UIGestureRecognizer){
+        let tapLocation = recognizer.location(in: sceneView)
+        let hitTestResults = sceneView.hitTest(tapLocation)
+        guard let node = hitTestResults.first?.node else{return}
+        let action = SCNAction.move(to: SCNVector3(0,0,0), duration: 2)
+        node.runAction(action)
+        //node.removeFromParentNode()
+    }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
